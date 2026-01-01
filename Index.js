@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import OpenAI from 'openai';
 
-// Create Discord client
+// Discord client
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -10,15 +10,15 @@ const client = new Client({
   ]
 });
 
-// Create OpenAI client
+// OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY // Set this in Railway Secrets
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-// Listen to messages
+// Hex replies only in #ai-hangout
 client.on('messageCreate', async (message) => {
-  if (message.author.bot) return; // ignore bots
-  if (message.channel.name !== 'ai-hangout') return; // only respond in this channel
+  if (message.author.bot) return;
+  if (message.channel.name !== 'ai-hangout') return;
 
   try {
     const response = await openai.chat.completions.create({
@@ -26,13 +26,12 @@ client.on('messageCreate', async (message) => {
       messages: [
         {
           role: 'system',
-          content: 'You are Hex, a chill, anime-style AI friend. Calm, funny, sarcastic sometimes, and a mediator in the group.'
+          content: 'You are Hex, a chill, anime-style AI friend. Calm, funny, sarcastic sometimes, and a mediator in group chats.'
         },
         { role: 'user', content: message.content }
       ]
     });
 
-    // Post reply in Discord
     message.channel.send(response.choices[0].message.content);
   } catch (err) {
     console.log('Error:', err);
